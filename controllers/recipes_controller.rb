@@ -3,6 +3,12 @@ class RecipesController < ApplicationController
     Recipe.all(:order => [ :id.desc ]).to_json
   end
 
+  get '/search' do
+    halt 400 if params[:ingredients].nil?
+    ids = params[:ingredients].split(",").map(&:to_i)
+    Recipe.all(Recipe.ingredients.id => ids).to_json
+  end
+
   get '/:id' do
     recipe = Recipe.get(params['id'])
     if recipe
@@ -12,7 +18,11 @@ class RecipesController < ApplicationController
     end
   end
 
-  not_found do
-    {:result => 'error', :message => 'not_found'}.to_json
+  get '/:id/ingredients' do
+    recipe = Recipe.get(params['id'])
+    if not recipe
+      halt not_found
+    end
+    recipe.ingredients.to_json
   end
 end

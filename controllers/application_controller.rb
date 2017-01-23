@@ -12,7 +12,8 @@ class ApplicationController < Sinatra::Base
 
   configure :development do
     DataMapper.finalize
-    DataMapper.auto_upgrade!
+    DataMapper.auto_migrate!
+    # DataMapper.auto_upgrade!
   end
 
   before do
@@ -21,5 +22,13 @@ class ApplicationController < Sinatra::Base
 
   get '/' do
     "Hello, World!"
+  end
+
+  not_found do
+    {:result => 'error', :message => 'not found'}.to_json
+  end
+
+  error 400 do
+    {:result => 'error', :message => 'bad request'}.to_json
   end
 end
